@@ -63,7 +63,8 @@
 <script>
   var position = { lat: -34.397, lng: 150.644 };
   var map;
-
+  var directionsService = "";
+  var directionsRenderer = "";
   function openNav() {
     document.getElementById("myNav").style.width = "50%";
   }
@@ -95,13 +96,18 @@
     show_map();
   }
 
+  /**
+   * Show Map
+   */
   function show_map() {
     document.getElementById("overlay").style.display = "none";
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer();
     var map = new google.maps.Map(document.getElementById("map"), {
       center: position,
       zoom: 6,
     });
-
+    directionsRenderer.setMap(map);
     var input = document.getElementById("form");
     var inputTo = document.getElementById("to");
     //map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -178,8 +184,38 @@
       document.getElementById("lat").innerHTML = place.geometry.location.lat();
       document.getElementById("lon").innerHTML = place.geometry.location.lng();
     });
+
+    autocompleteTo.addListener("place_changed", function () {
+      var place = autocompleteTo.getPlace();
+      if (!place.geometry) {
+        window.alert("Autocomplete's returned place contains no geometry");
+        return;
+      }
+
+      document.getElementById("lat-to").innerHTML =
+        place.geometry.location.lat();
+      document.getElementById("lon-to").innerHTML =
+        place.geometry.location.lng();
+    });
   }
 
+  function calcRoute() {
+    console.log("1");
+    var start = document.getElementById("form").value;
+    var end = document.getElementById("to").value;
+    var request = {
+      origin: start,
+      destination: end,
+      travelMode: "DRIVING",
+    };
+    directionsService.route(request, function (result, status) {
+      console.log("2");
+      if (status == "OK") {
+        console.log("3");
+        directionsRenderer.setDirections(result);
+      }
+    });
+  }
   function initMap() {
     getLocation();
   }
@@ -235,7 +271,12 @@
         Longitude: <span id="lon-to"></span>
       </div>
       <div class="col-md-3">
-        <input type="button" value="Travel!!" class="btn-primary px-2" />
+        <input
+          type="button"
+          value="Travel!!"
+          class="btn-primary px-2"
+          onclick="calcRoute()"
+        />
       </div>
     </div>
   </div>
