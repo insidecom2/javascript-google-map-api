@@ -5,7 +5,6 @@
   }
 
   #view_port {
-    /* position: relative; */
     height: 70vh;
     background-color: #c4c4c4"
   }
@@ -26,6 +25,33 @@
     font-size: medium;
     width: 100px;
     height: 20px;
+  }
+
+  .view_port {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid black;
+  }
+
+  #slide {
+    position: absolute;
+    top:0;
+    right: 0px;
+    width: 0px;
+    height: 100%;
+    background:#CCC;
+    -webkit-animation: slide 0.5s forwards;
+    -webkit-animation-delay: 2s;
+    animation: slide 0.5s forwards;
+    animation-delay: 2s;
+  }
+
+  @-webkit-keyframes slide {
+      100% { width: 100px; }
+  }
+
+  @keyframes slide {
+      100% { width: 100px; }
   }
 </style>
 <link
@@ -71,9 +97,86 @@
 
   function show_map() {
     document.getElementById("overlay").style.display = "none";
-    map = new google.maps.Map(document.getElementById("map"), {
+    var map = new google.maps.Map(document.getElementById("map"), {
       center: position,
       zoom: 6,
+    });
+
+    var input = document.getElementById("form");
+    var inputTo = document.getElementById("to");
+    //map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    var autocomplete = new google.maps.places.Autocomplete(input);
+    var autocompleteTo = new google.maps.places.Autocomplete(inputTo);
+    autocomplete.bindTo("bounds", map);
+    autocompleteTo.bindTo("bounds", map);
+
+    var infowindow = new google.maps.InfoWindow();
+    var marker = new google.maps.Marker({
+      map: map,
+      anchorPoint: new google.maps.Point(0, -29),
+    });
+
+    autocomplete.addListener("place_changed", function () {
+      infowindow.close();
+      marker.setVisible(false);
+      var place = autocomplete.getPlace();
+      if (!place.geometry) {
+        window.alert("Autocomplete's returned place contains no geometry");
+        return;
+      }
+
+      // If the place has a geometry, then present it on a map.
+      if (place.geometry.viewport) {
+        map.fitBounds(place.geometry.viewport);
+      } else {
+        map.setCenter(place.geometry.location);
+        map.setZoom(17);
+      }
+      marker.setIcon({
+        url: place.icon,
+        size: new google.maps.Size(71, 71),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(17, 34),
+        scaledSize: new google.maps.Size(35, 35),
+      });
+      marker.setPosition(place.geometry.location);
+      marker.setVisible(true);
+
+      var address = "";
+      if (place.address_components) {
+        address = [
+          (place.address_components[0] &&
+            place.address_components[0].short_name) ||
+            "",
+          (place.address_components[1] &&
+            place.address_components[1].short_name) ||
+            "",
+          (place.address_components[2] &&
+            place.address_components[2].short_name) ||
+            "",
+        ].join(" ");
+      }
+
+      infowindow.setContent(
+        "<div><strong>" + place.name + "</strong><br>" + address
+      );
+      infowindow.open(map, marker);
+
+      // Location details
+      // for (var i = 0; i < place.address_components.length; i++) {
+      //   if (place.address_components[i].types[0] == "postal_code") {
+      //     document.getElementById("postal_code").innerHTML =
+      //       place.address_components[i].long_name;
+      //   }
+      //   if (place.address_components[i].types[0] == "country") {
+      //     document.getElementById("country").innerHTML =
+      //       place.address_components[i].long_name;
+      //   }
+      // }
+      //document.getElementById("location").innerHTML = place.formatted_address;
+      document.getElementById("lat").innerHTML = place.geometry.location.lat();
+      document.getElementById("lon").innerHTML = place.geometry.location.lng();
     });
   }
 
@@ -81,8 +184,9 @@
     getLocation();
   }
 </script>
+
 <script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB5kbREHVDUftZ5Ml8nGae0Nmdn2exEMHw&callback=initMap"
+  src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyB5kbREHVDUftZ5Ml8nGae0Nmdn2exEMHw&callback=initMap"
   async
   defer
 ></script>
@@ -106,6 +210,32 @@
         <div id="overlay">
           <p>Loading..</p>
         </div>
+      </div>
+    </div>
+    <div class="row p-4" style="margin-bottom: 50%">
+      <!-- Display geolocation data -->
+      <!-- <ul class="geo-data">
+        <li>Full Address: <span id="location"></span></li>
+        <li>Postal Code: <span id="postal_code"></span></li>
+        <li>Country: <span id="country"></span></li>
+        <li>Latitude: <span id="lat"></span></li>
+        <li>Longitude: <span id="lon"></span></li>
+      </ul> -->
+      <div class="col-md-3">
+        From :
+        <input type="text" id="form" placeholder="Enter a location" />
+        Latitude:
+        <span id="lat"></span><br />
+        Longitude: <span id="lon"></span>
+      </div>
+      <div class="col-md-3">
+        To : <input type="text" id="to" class="" />
+        Latitude:
+        <span id="lat-to"></span><br />
+        Longitude: <span id="lon-to"></span>
+      </div>
+      <div class="col-md-3">
+        <input type="button" value="Travel!!" class="btn-primary px-2" />
       </div>
     </div>
   </div>
