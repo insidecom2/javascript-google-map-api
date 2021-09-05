@@ -60,12 +60,18 @@
   integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2"
   crossorigin="anonymous"
 />
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"
+></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js"></script>
 <script>
   var position = { lat: -34.397, lng: 150.644 };
   var map;
   var directionsService = "";
   var directionsRenderer = "";
+  const googleAPIKey = "AIzaSyB5kbREHVDUftZ5Ml8nGae0Nmdn2exEMHw";
   function openNav() {
     document.getElementById("myNav").style.width = "50%";
   }
@@ -1171,7 +1177,6 @@
    * cal route
    */
   function calcRoute() {
-    console.log("1");
     var start = document.getElementById("form").value;
     var end = document.getElementById("to").value;
     var request = {
@@ -1180,9 +1185,7 @@
       travelMode: "DRIVING",
     };
     directionsService.route(request, function (result, status) {
-      console.log("2");
       if (status == "OK") {
-        console.log("3");
         directionsRenderer.setDirections(result);
       }
     });
@@ -1191,16 +1194,26 @@
     getLocation();
   }
 
+  /**
+   * take shot //
+   *
+   */
   function takeshot() {
-    let div = document.getElementById("map");
-
-    // Use the html2canvas
-    // function to take a screenshot
-    // and append it
-    // to the output div
-    html2canvas(div).then(function (canvas) {
-      document.getElementById("output").appendChild(canvas);
-    });
+    let center = map.getCenter();
+    let zoom = map.getZoom();
+    let getDirection = map.getDirection();
+    console.log(getDirection);
+    // await $.get(
+    //   "https://maps.googleapis.com/maps/api/directions/json?origin=Chiangmai&destination=Bangkok&mode=driving&key=AIzaSyB5kbREHVDUftZ5Ml8nGae0Nmdn2exEMHw",
+    //   function (data) {
+    //     getDirection = data;
+    //   }
+    // );
+    // console.log(getDirection.routes[0].overview_polyline.points);
+    let url = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat()},${center.lng()}&zoom=${zoom}`;
+    url += `&size=1847x1247`;
+    url += `&path=${getDirection}&key=${googleAPIKey}`;
+    $("#img-static").attr("src", url);
   }
 </script>
 
@@ -1276,7 +1289,7 @@
           onclick="takeshot()"
         />
       </div>
+      <img src="" id="img-static" />
     </div>
-    <div id="output"></div>
   </div>
 </body>
