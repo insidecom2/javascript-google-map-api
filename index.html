@@ -66,11 +66,13 @@
   crossorigin="anonymous"
 ></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 <script>
   var position = { lat: -34.397, lng: 150.644 };
   var map;
   var directionsService = "";
   var directionsRenderer = "";
+  let mapStylechoose = "";
   const googleAPIKey = "AIzaSyB5kbREHVDUftZ5Ml8nGae0Nmdn2exEMHw";
   function openNav() {
     document.getElementById("myNav").style.width = "50%";
@@ -97,6 +99,9 @@
     document.getElementById("overlay").style.display = "block";
   }
 
+  /** 
+   * show Position
+  */
   function showPosition(positionGet) {
     position.lat = positionGet.coords.latitude;
     position.lng = positionGet.coords.longitude;
@@ -115,7 +120,7 @@
       zoom: 6,
     });
     directionsRenderer.setMap(map);
-    var input = document.getElementById("form");
+    var input = document.getElementById("from");
     var inputTo = document.getElementById("to");
 
     //map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -204,9 +209,9 @@
 
     if (theme == "standard") {
       styledMapType = new google.maps.StyledMapType([]);
+      mapStylechoose = "";
     } else if (theme == "silver") {
-      styledMapType = new google.maps.StyledMapType(
-        [
+      mapStylechoose = [
           {
             elementType: "geometry",
             stylers: [
@@ -300,6 +305,7 @@
               {
                 color: "#757575",
               },
+              {visibility: "off"}
             ],
           },
           {
@@ -309,6 +315,7 @@
               {
                 color: "#dadada",
               },
+              {visibility: "off"}
             ],
           },
           {
@@ -318,6 +325,7 @@
               {
                 color: "#616161",
               },
+              {visibility: "off"}
             ],
           },
           {
@@ -327,6 +335,7 @@
               {
                 color: "#9e9e9e",
               },
+              {visibility: "off"}
             ],
           },
           {
@@ -367,9 +376,11 @@
           },
         ],
         { name: "Light" }
+      styledMapType = new google.maps.StyledMapType(
+        mapStylechoose
       );
     } else if (theme == "retro") {
-      styledMapType = new google.maps.StyledMapType([
+      mapStylechoose = [
         {
           elementType: "geometry",
           stylers: [
@@ -583,9 +594,11 @@
             },
           ],
         },
-      ]);
+      ]
+      styledMapType = new google.maps.StyledMapType(mapStylechoose);
     } else if (theme == "dark") {
-      styledMapType = new google.maps.StyledMapType([
+      
+      mapStylechoose = [
         {
           elementType: "geometry",
           stylers: [
@@ -770,9 +783,10 @@
             },
           ],
         },
-      ]);
+      ]
+      styledMapType = new google.maps.StyledMapType(mapStylechoose);
     } else if (theme == "night") {
-      styledMapType = new google.maps.StyledMapType([
+      mapStylechoose = [
         {
           elementType: "geometry",
           stylers: [
@@ -932,9 +946,10 @@
             },
           ],
         },
-      ]);
+      ]
+      styledMapType = new google.maps.StyledMapType(mapStylechoose);
     } else if (theme == "aubergine") {
-      styledMapType = new google.maps.StyledMapType([
+      mapStylechoose  = [
         {
           elementType: "geometry",
           stylers: [
@@ -1166,7 +1181,8 @@
             },
           ],
         },
-      ]);
+      ]
+      styledMapType = new google.maps.StyledMapType(mapStylechoose);
     }
 
     map.mapTypes.set("styled_map", styledMapType);
@@ -1177,7 +1193,7 @@
    * cal route
    */
   function calcRoute() {
-    var start = document.getElementById("form").value;
+    var start = document.getElementById("from").value;
     var end = document.getElementById("to").value;
     var request = {
       origin: start,
@@ -1190,6 +1206,10 @@
       }
     });
   }
+
+  /**
+   * init Map 
+   */
   function initMap() {
     getLocation();
   }
@@ -1198,22 +1218,59 @@
    * take shot //
    *
    */
-  function takeshot() {
+  async function takeshot() {
     let center = map.getCenter();
     let zoom = map.getZoom();
-    let getDirection = map.getDirection();
-    console.log(getDirection);
-    // await $.get(
-    //   "https://maps.googleapis.com/maps/api/directions/json?origin=Chiangmai&destination=Bangkok&mode=driving&key=AIzaSyB5kbREHVDUftZ5Ml8nGae0Nmdn2exEMHw",
-    //   function (data) {
-    //     getDirection = data;
-    //   }
-    // );
-    // console.log(getDirection.routes[0].overview_polyline.points);
+    let polyline ='';
+    let style = mapStylechoose ?get_static_style(mapStylechoose):'';
+    let marker = '';
+    const origin = document.getElementById('from').value;
+    const des = document.getElementById('to').value;
+    if(origin!="" && des != ""){
+      const destinationUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${des}&key=${googleAPIKey}`;
+      const desData = await ajax(destinationUrl);
+      const googleDirection = JSON.parse(desData, true);
+      polyline = googleDirection['routes'][0]['overview_polyline']['points'];
+      marker = `&markers=size:small%7Ccolor:red%7C${origin}&markers=size:red%7Ccolor:white%7Clabel:C%7C${des}`
+    }
+
     let url = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat()},${center.lng()}&zoom=${zoom}`;
     url += `&size=1847x1247`;
-    url += `&path=${getDirection}&key=${googleAPIKey}`;
-    $("#img-static").attr("src", url);
+    url += (style != "" ?`&${style}`:'');
+    url += (polyline != ""? `&path=enc:${polyline}`:'')
+    url += (marker != ""? `${marker}`:'')
+    url += `&key=${googleAPIKey}`;
+    $("#showimg").attr("src", url);
+     $("#modal").modal('show');
+
+ 
+  }
+
+  function ajax(url)
+  {
+    var xmlHttp = null;
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", url, false );
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+  }
+  function get_static_style(styles) {
+    var result = [];
+    styles.forEach(function(v, i, a){
+      var style='';
+      if (v.stylers.length > 0) { // Needs to have a style rule to be valid.
+        style += (v.hasOwnProperty('featureType') ? 'feature:' + v.featureType : 'feature:all') + '|';
+        style += (v.hasOwnProperty('elementType') ? 'element:' + v.elementType : 'element:all') + '|';
+        v.stylers.forEach(function(val, i, a){
+          var propertyname = Object.keys(val)[0];
+          var propertyval = val[propertyname].toString().replace('#', '0x');
+          style += propertyname + ':' + propertyval + '|';
+        });
+      }
+      result.push('style='+encodeURIComponent(style))
+    });
+
+    return result.join('&');
   }
 </script>
 
@@ -1246,14 +1303,14 @@
     </div>
     <div class="row p-4" style="margin-bottom: 50%">
       <div class="col-md-3">
-        From :
-        <input type="text" id="form" placeholder="Enter a location" />
+    
+        <input type="text" id="from" placeholder="Enter location "  />
         <!-- Latitude:
         <span id="lat"></span><br />
         Longitude: <span id="lon"></span> -->
       </div>
       <div class="col-md-3">
-        To : <input type="text" id="to" class="" />
+         <input type="text" id="to" class=""  placeholder="Enter location destination"/>
         <!-- Latitude:
         <span id="lat-to"></span><br />
         Longitude: <span id="lon-to"></span> -->
@@ -1290,6 +1347,25 @@
         />
       </div>
       <img src="" id="img-static" />
+    </div>
+  </div>
+<!-- modal show image map -->
+  <div class="modal" tabindex="-1" id="modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Show Map</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+         <img src="" id="showimg" class="img-fluid">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
   </div>
 </body>
