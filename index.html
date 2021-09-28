@@ -66,13 +66,32 @@
   crossorigin="anonymous"
 ></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+  crossorigin="anonymous"
+></script>
 <script>
   var position = { lat: -34.397, lng: 150.644 };
   var map;
   var directionsService = "";
   var directionsRenderer = "";
   let mapStylechoose = "";
+
+  const size = {
+    A4: "3508x2480",
+    A3: "4961x3508",
+    A2: "7016x4961",
+    A1: "9933x7016",
+  };
+
+  const sizeBleedArea = {
+    A4: "3508x2480",
+    A3: "4961x3508",
+    A2: "7016x4961",
+    A1: "9933x7016",
+  };
+
   const googleAPIKey = "AIzaSyB5kbREHVDUftZ5Ml8nGae0Nmdn2exEMHw";
   function openNav() {
     document.getElementById("myNav").style.width = "50%";
@@ -99,9 +118,9 @@
     document.getElementById("overlay").style.display = "block";
   }
 
-  /** 
+  /**
    * show Position
-  */
+   */
   function showPosition(positionGet) {
     position.lat = positionGet.coords.latitude;
     position.lng = positionGet.coords.longitude;
@@ -211,174 +230,172 @@
       styledMapType = new google.maps.StyledMapType([]);
       mapStylechoose = "";
     } else if (theme == "silver") {
-      mapStylechoose = [
-          {
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#f5f5f5",
-              },
-            ],
-          },
-          {
-            elementType: "labels.icon",
-            stylers: [
-              {
-                visibility: "off",
-              },
-            ],
-          },
-          {
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#616161",
-              },
-            ],
-          },
-          {
-            elementType: "labels.text.stroke",
-            stylers: [
-              {
-                color: "#f5f5f5",
-              },
-            ],
-          },
-          {
-            featureType: "administrative.land_parcel",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#bdbdbd",
-              },
-            ],
-          },
-          {
-            featureType: "poi",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#eeeeee",
-              },
-            ],
-          },
-          {
-            featureType: "poi",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#757575",
-              },
-            ],
-          },
-          {
-            featureType: "poi.park",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#e5e5e5",
-              },
-            ],
-          },
-          {
-            featureType: "poi.park",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#9e9e9e",
-              },
-            ],
-          },
-          {
-            featureType: "road",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#ffffff",
-              },
-            ],
-          },
-          {
-            featureType: "road.arterial",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#757575",
-              },
-              {visibility: "off"}
-            ],
-          },
-          {
-            featureType: "road.highway",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#dadada",
-              },
-              {visibility: "off"}
-            ],
-          },
-          {
-            featureType: "road.highway",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#616161",
-              },
-              {visibility: "off"}
-            ],
-          },
-          {
-            featureType: "road.local",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#9e9e9e",
-              },
-              {visibility: "off"}
-            ],
-          },
-          {
-            featureType: "transit.line",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#e5e5e5",
-              },
-            ],
-          },
-          {
-            featureType: "transit.station",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#eeeeee",
-              },
-            ],
-          },
-          {
-            featureType: "water",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#c9c9c9",
-              },
-            ],
-          },
-          {
-            featureType: "water",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#9e9e9e",
-              },
-            ],
-          },
-        ],
-        { name: "Light" }
-      styledMapType = new google.maps.StyledMapType(
-        mapStylechoose
-      );
+      (mapStylechoose = [
+        {
+          elementType: "geometry",
+          stylers: [
+            {
+              color: "#f5f5f5",
+            },
+          ],
+        },
+        {
+          elementType: "labels.icon",
+          stylers: [
+            {
+              visibility: "off",
+            },
+          ],
+        },
+        {
+          elementType: "labels.text.fill",
+          stylers: [
+            {
+              color: "#616161",
+            },
+          ],
+        },
+        {
+          elementType: "labels.text.stroke",
+          stylers: [
+            {
+              color: "#f5f5f5",
+            },
+          ],
+        },
+        {
+          featureType: "administrative.land_parcel",
+          elementType: "labels.text.fill",
+          stylers: [
+            {
+              color: "#bdbdbd",
+            },
+          ],
+        },
+        {
+          featureType: "poi",
+          elementType: "geometry",
+          stylers: [
+            {
+              color: "#eeeeee",
+            },
+          ],
+        },
+        {
+          featureType: "poi",
+          elementType: "labels.text.fill",
+          stylers: [
+            {
+              color: "#757575",
+            },
+          ],
+        },
+        {
+          featureType: "poi.park",
+          elementType: "geometry",
+          stylers: [
+            {
+              color: "#e5e5e5",
+            },
+          ],
+        },
+        {
+          featureType: "poi.park",
+          elementType: "labels.text.fill",
+          stylers: [
+            {
+              color: "#9e9e9e",
+            },
+          ],
+        },
+        {
+          featureType: "road",
+          elementType: "geometry",
+          stylers: [
+            {
+              color: "#ffffff",
+            },
+          ],
+        },
+        {
+          featureType: "road.arterial",
+          elementType: "labels.text.fill",
+          stylers: [
+            {
+              color: "#757575",
+            },
+            { visibility: "off" },
+          ],
+        },
+        {
+          featureType: "road.highway",
+          elementType: "geometry",
+          stylers: [
+            {
+              color: "#dadada",
+            },
+            { visibility: "off" },
+          ],
+        },
+        {
+          featureType: "road.highway",
+          elementType: "labels.text.fill",
+          stylers: [
+            {
+              color: "#616161",
+            },
+            { visibility: "off" },
+          ],
+        },
+        {
+          featureType: "road.local",
+          elementType: "labels.text.fill",
+          stylers: [
+            {
+              color: "#9e9e9e",
+            },
+            { visibility: "off" },
+          ],
+        },
+        {
+          featureType: "transit.line",
+          elementType: "geometry",
+          stylers: [
+            {
+              color: "#e5e5e5",
+            },
+          ],
+        },
+        {
+          featureType: "transit.station",
+          elementType: "geometry",
+          stylers: [
+            {
+              color: "#eeeeee",
+            },
+          ],
+        },
+        {
+          featureType: "water",
+          elementType: "geometry",
+          stylers: [
+            {
+              color: "#c9c9c9",
+            },
+          ],
+        },
+        {
+          featureType: "water",
+          elementType: "labels.text.fill",
+          stylers: [
+            {
+              color: "#9e9e9e",
+            },
+          ],
+        },
+      ]),
+        { name: "Light" };
+      styledMapType = new google.maps.StyledMapType(mapStylechoose);
     } else if (theme == "retro") {
       mapStylechoose = [
         {
@@ -594,10 +611,9 @@
             },
           ],
         },
-      ]
+      ];
       styledMapType = new google.maps.StyledMapType(mapStylechoose);
     } else if (theme == "dark") {
-      
       mapStylechoose = [
         {
           elementType: "geometry",
@@ -783,7 +799,7 @@
             },
           ],
         },
-      ]
+      ];
       styledMapType = new google.maps.StyledMapType(mapStylechoose);
     } else if (theme == "night") {
       mapStylechoose = [
@@ -946,10 +962,10 @@
             },
           ],
         },
-      ]
+      ];
       styledMapType = new google.maps.StyledMapType(mapStylechoose);
     } else if (theme == "aubergine") {
-      mapStylechoose  = [
+      mapStylechoose = [
         {
           elementType: "geometry",
           stylers: [
@@ -1181,7 +1197,7 @@
             },
           ],
         },
-      ]
+      ];
       styledMapType = new google.maps.StyledMapType(mapStylechoose);
     }
 
@@ -1208,7 +1224,7 @@
   }
 
   /**
-   * init Map 
+   * init Map
    */
   function initMap() {
     getLocation();
@@ -1221,56 +1237,61 @@
   async function takeshot() {
     let center = map.getCenter();
     let zoom = map.getZoom();
-    let polyline ='';
-    let style = mapStylechoose ?get_static_style(mapStylechoose):'';
-    let marker = '';
-    const origin = document.getElementById('from').value;
-    const des = document.getElementById('to').value;
-    if(origin!="" && des != ""){
+    let polyline = "";
+    let style = mapStylechoose ? get_static_style(mapStylechoose) : "";
+    let marker = "";
+    const origin = document.getElementById("from").value;
+    const des = document.getElementById("to").value;
+    const size = document.getElementById("size").value;
+    if (origin != "" && des != "") {
       const destinationUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${des}&key=${googleAPIKey}`;
       const desData = await ajax(destinationUrl);
       const googleDirection = JSON.parse(desData, true);
-      polyline = googleDirection['routes'][0]['overview_polyline']['points'];
-      marker = `&markers=size:small%7Ccolor:red%7C${origin}&markers=size:red%7Ccolor:white%7Clabel:C%7C${des}`
+      polyline = googleDirection["routes"][0]["overview_polyline"]["points"];
+      marker = `&markers=size:small%7Ccolor:red%7C${origin}&markers=size:red%7Ccolor:white%7Clabel:C%7C${des}`;
     }
 
     let url = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat()},${center.lng()}&zoom=${zoom}`;
-    url += `&size=1847x1247`;
-    url += (style != "" ?`&${style}`:'');
-    url += (polyline != ""? `&path=enc:${polyline}`:'')
-    url += (marker != ""? `${marker}`:'')
+    url += `&size=${size}&scale=2`;
+    url += style != "" ? `&${style}` : "";
+    url += polyline != "" ? `&path=enc:${polyline}` : "";
+    url += marker != "" ? `${marker}` : "";
     url += `&key=${googleAPIKey}`;
     $("#showimg").attr("src", url);
-     $("#modal").modal('show');
-
- 
+    $("#modal").modal("show");
   }
 
-  function ajax(url)
-  {
+  function ajax(url) {
     var xmlHttp = null;
     xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", url, false );
-    xmlHttp.send( null );
+    xmlHttp.open("GET", url, false);
+    xmlHttp.send(null);
     return xmlHttp.responseText;
   }
   function get_static_style(styles) {
     var result = [];
-    styles.forEach(function(v, i, a){
-      var style='';
-      if (v.stylers.length > 0) { // Needs to have a style rule to be valid.
-        style += (v.hasOwnProperty('featureType') ? 'feature:' + v.featureType : 'feature:all') + '|';
-        style += (v.hasOwnProperty('elementType') ? 'element:' + v.elementType : 'element:all') + '|';
-        v.stylers.forEach(function(val, i, a){
+    styles.forEach(function (v, i, a) {
+      var style = "";
+      if (v.stylers.length > 0) {
+        // Needs to have a style rule to be valid.
+        style +=
+          (v.hasOwnProperty("featureType")
+            ? "feature:" + v.featureType
+            : "feature:all") + "|";
+        style +=
+          (v.hasOwnProperty("elementType")
+            ? "element:" + v.elementType
+            : "element:all") + "|";
+        v.stylers.forEach(function (val, i, a) {
           var propertyname = Object.keys(val)[0];
-          var propertyval = val[propertyname].toString().replace('#', '0x');
-          style += propertyname + ':' + propertyval + '|';
+          var propertyval = val[propertyname].toString().replace("#", "0x");
+          style += propertyname + ":" + propertyval + "|";
         });
       }
-      result.push('style='+encodeURIComponent(style))
+      result.push("style=" + encodeURIComponent(style));
     });
 
-    return result.join('&');
+    return result.join("&");
   }
 </script>
 
@@ -1303,14 +1324,18 @@
     </div>
     <div class="row p-4" style="margin-bottom: 50%">
       <div class="col-md-3">
-    
-        <input type="text" id="from" placeholder="Enter location "  />
+        <input type="text" id="from" placeholder="Enter location " />
         <!-- Latitude:
         <span id="lat"></span><br />
         Longitude: <span id="lon"></span> -->
       </div>
       <div class="col-md-3">
-         <input type="text" id="to" class=""  placeholder="Enter location destination"/>
+        <input
+          type="text"
+          id="to"
+          class=""
+          placeholder="Enter location destination"
+        />
         <!-- Latitude:
         <span id="lat-to"></span><br />
         Longitude: <span id="lon-to"></span> -->
@@ -1323,7 +1348,7 @@
           onclick="calcRoute()"
         />
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <select
           id="style"
           onchange="changeTheme(this.value)"
@@ -1338,6 +1363,9 @@
           <option value="aubergine">Aubergine</option>
         </select>
       </div>
+      <div class="col-md-1">
+        <select id="size" class="form-control"></select>
+      </div>
       <div class="col-md-2">
         <input
           type="button"
@@ -1349,23 +1377,39 @@
       <img src="" id="img-static" />
     </div>
   </div>
-<!-- modal show image map -->
+  <!-- modal show image map -->
   <div class="modal" tabindex="-1" id="modal">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Show Map</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-         <img src="" id="showimg" class="img-fluid">
+          <img src="" id="showimg" class="img-fluid" />
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Close
+          </button>
         </div>
       </div>
     </div>
   </div>
+  <script>
+    for (const [key, value] of Object.entries(size)) {
+      var option = document.createElement("option");
+      option.text = key;
+      option.value = value;
+      var select = document.getElementById("size");
+      select.appendChild(option);
+    }
+  </script>
 </body>
